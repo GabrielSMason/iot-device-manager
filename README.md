@@ -1,6 +1,6 @@
 # IoT Device Manager API
 
-API REST em Node.js para cadastro de usuarios, autenticacao com JWT e gerenciamento de devices IoT.
+API REST para cadastro de usuários, autenticação com JWT e gerenciamento de dispositivos IoT. Desenvolvida com Node.js, Express, MongoDB e bcryptjs. 
 
 ## Tecnologias
 
