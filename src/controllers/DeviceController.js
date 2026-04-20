@@ -1,6 +1,7 @@
 import Device from "../models/Device.js";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 
 export const createDevice = async (req, res) => {
   try {
@@ -18,7 +19,11 @@ export const createDevice = async (req, res) => {
     res.status(201).json({
       message:
         "Device criado com sucesso,guarde sua senha porque ela não será mostrada novamente!",
-      novoDevice: novoDevice,
+      id: novoDevice._id,
+      nickname: nickname,
+      deviceId: meuDeviceID,
+      unit: unit,
+      owner: req.usuarioId,
       suaSenhaSecreta: senhaDoDispositivo,
     });
   } catch (error) {
@@ -40,27 +45,39 @@ export const listarDevice = async (req, res) => {
 export const atualizarDevice = async (req, res) => {
   try {
     const idDevice = req.params.id;
-    const ownerDevice = await Device.findById(idDevice).select("owner");
-    let deviceAtualizado;
+    const { nickname } = req.body;
 
-    if (ownerDevice === null) {
-      res.status(404).json({ message: "Device não encontrado" });
-      return;
+    if (!nickname) {
+      return res.status(400).json({ message: "nickname e obrigatorio" });
     }
-    if (ownerDevice.owner.toString() === req.usuarioId) {
-      deviceAtualizado = await Device.findByIdAndUpdate(
-        idDevice,
-        { nickname: req.body.nickname },
-        { new: true }, // retorna o documento já atualizado
-      );
-      if (!deviceAtualizado) {
-        res.status(403).json({ message: "Device não encontrado" });
-        return;
-      }
+
+    let filtroIdDevice;
+
+    if (mongoose.Types.ObjectId.isValid(idDevice)) {
+      filtroIdDevice = {
+        $or: [{ _id: idDevice }, { deviceId: idDevice }],
+      };
     } else {
-      res.status(404).json({ message: "Usuario não é o dono do Sensor" });
-      return;
+      filtroIdDevice = { deviceId: idDevice };
     }
+
+    const ownerDevice = await Device.findOne(filtroIdDevice).select("owner");
+    if (!ownerDevice) {
+      return res.status(404).json({ message: "Device não encontrado" });
+    }
+
+    if (ownerDevice.owner.toString() !== req.usuarioId) {
+      return res
+        .status(403)
+        .json({ message: "Usuario nao e o dono do Sensor" });
+    }
+    const deviceAtualizado = await Device.findOneAndUpdate(
+      filtroIdDevice,
+      {
+        nickname,
+      },
+      { new: true },
+    );
     res.status(200).json({
       message: "Nickname atualizado com sucesso",
       device: deviceAtualizado,
@@ -71,7 +88,41 @@ export const atualizarDevice = async (req, res) => {
     });
   }
 };
-// export const deleteDevice = async (req, res) => {
-//   try {
-//   } catch (error) {}
-// };
+export const deleteDevice = async (req, res) => {
+  try {
+    const idDevice = req.params.id;
+    let filtroIdDevice;
+
+    if (mongoose.Types.ObjectId.isValid(idDevice)) {
+      filtroIdDevice = {
+        $or: [{ _id: idDevice }, { deviceId: idDevice }],
+      };
+    } else {
+      filtroIdDevice = { deviceId: idDevice };
+    }
+    const ownerDevice = await Device.findOne(filtroIdDevice).select("owner");
+    if (!ownerDevice) {
+      return res.status(404).json({ message: "Device nao encontrado" });
+    }
+
+    if (ownerDevice.owner.toString() !== req.usuarioId) {
+      return res
+        .status(403)
+        .json({ message: "Usuario nao e o dono do Sensor" });
+    }
+
+    const deletedDevice = await Device.findOneAndDelete(filtroIdDevice);
+
+    if (!deletedDevice) {
+      return res.status(404).json({ message: "Device não encontrado" });
+    } else {
+      return res
+        .status(200)
+        .json({ message: "Device excluido com sucesso", deletedDevice });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: `${error.message} - Falha ao deletar o Device`,
+    });
+  }
+};

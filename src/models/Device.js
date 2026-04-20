@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const DeviceSchema = new mongoose.Schema({
   nickname: { type: String },
-  deviceId: { type: String, required: true },
+  deviceId: { type: String, required: true, unique: true },
   devicePwdHash: { type: String, required: true },
   unit: { type: String },
   value: { type: Number },
