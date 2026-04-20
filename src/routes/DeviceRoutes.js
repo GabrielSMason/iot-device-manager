@@ -1,11 +1,17 @@
 import express from "express";
-import { createDevice, listarDevice } from "../controllers/DeviceController.js";
+import {
+  createDevice,
+  listarDevice,
+  atualizarDevice,
+} from "../controllers/DeviceController.js";
 import authMiddleware from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
 router
-  .get("/listaDevice", authMiddleware, listarDevice)
-  .post("/device", authMiddleware, createDevice);
+  .get("/devices", authMiddleware, listarDevice)
+  .post("/devices", authMiddleware, createDevice)
+  .patch("/devices/:id", authMiddleware, atualizarDevice);
+// .delete("/devices/:id", authMiddleware, deleteDevice);
 
 export default router;

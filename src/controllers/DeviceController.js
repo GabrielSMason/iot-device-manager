@@ -30,10 +30,48 @@ export const createDevice = async (req, res) => {
 export const listarDevice = async (req, res) => {
   try {
     const listaDeSensores = await Device.find({ owner: req.usuarioId });
-    res.status(200).json({ message: listaDeSensores });
+    res.status(200).json({ devices: listaDeSensores });
   } catch (error) {
     res.status(500).json({
       message: `${error.message} - Falha ao encontrar o Sensor`,
     });
   }
 };
+export const atualizarDevice = async (req, res) => {
+  try {
+    const idDevice = req.params.id;
+    const ownerDevice = await Device.findById(idDevice).select("owner");
+    let deviceAtualizado;
+
+    if (ownerDevice === null) {
+      res.status(404).json({ message: "Device não encontrado" });
+      return;
+    }
+    if (ownerDevice.owner.toString() === req.usuarioId) {
+      deviceAtualizado = await Device.findByIdAndUpdate(
+        idDevice,
+        { nickname: req.body.nickname },
+        { new: true }, // retorna o documento já atualizado
+      );
+      if (!deviceAtualizado) {
+        res.status(403).json({ message: "Device não encontrado" });
+        return;
+      }
+    } else {
+      res.status(404).json({ message: "Usuario não é o dono do Sensor" });
+      return;
+    }
+    res.status(200).json({
+      message: "Nickname atualizado com sucesso",
+      device: deviceAtualizado,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: `${error.message} - Falha ao atualizar o nickname`,
+    });
+  }
+};
+// export const deleteDevice = async (req, res) => {
+//   try {
+//   } catch (error) {}
+// };
