@@ -6,6 +6,12 @@ import mongoose from "mongoose";
 export const createDevice = async (req, res) => {
   try {
     const { nickname, unit } = req.body;
+    const unitCode = Number(unit);
+    if (![1, 2, 3].includes(unitCode)) {
+      return res.status(400).json({
+        message: "Unit must be 1, 2, or 3",
+      });
+    }
     const meuDeviceID = crypto.randomUUID();
     const senhaDoDispositivo = Math.random().toString(36).slice(-8);
     const senhaDoDispositivoHash = await bcrypt.hash(senhaDoDispositivo, 10);
@@ -13,16 +19,16 @@ export const createDevice = async (req, res) => {
       nickname: nickname,
       deviceId: meuDeviceID,
       devicePwdHash: senhaDoDispositivoHash,
-      unit: unit,
+      unit: unitCode,
       owner: req.usuarioId,
     });
     res.status(201).json({
       message:
-        "Device criado com sucesso,guarde sua senha porque ela não será mostrada novamente!",
+        "Device criado com sucesso, guarde sua senha porque ela não será mostrada novamente!",
       id: novoDevice._id,
       nickname: nickname,
       deviceId: meuDeviceID,
-      unit: unit,
+      unit: unitCode,
       owner: req.usuarioId,
       suaSenhaSecreta: senhaDoDispositivo,
     });
@@ -124,5 +130,37 @@ export const deleteDevice = async (req, res) => {
     return res.status(500).json({
       message: `${error.message} - Falha ao deletar o Device`,
     });
+  }
+};
+
+export const updateDeviceValue = async (req, res) => {
+  try {
+    const { value } = req.body;
+    if (value === undefined) {
+      return res.status(400).json({ message: "Value is required" });
+    }
+    req.device.value = value;
+    const updatedDevice = await req.device.save();
+    res.status(200).json({
+      message: "Device value updated successfully",
+      device: {
+        deviceId: updatedDevice.deviceId,
+        unit: updatedDevice.unit,
+        value: updatedDevice.value,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: `${error.message} - Failed to update device value` });
+  }
+};
+
+export const getDeviceInfo = async (req, res) => {
+  try {
+    res.status(200).json({
+      deviceId: req.device.deviceId,
+      unit: req.device.unit,
+    });
+  } catch (error) {
+    res.status(500).json({ message: `${error.message} - Failed to get device info` });
   }
 };

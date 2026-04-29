@@ -4,9 +4,10 @@ const DeviceSchema = new mongoose.Schema({
   nickname: { type: String },
   deviceId: { type: String, required: true, unique: true },
   devicePwdHash: { type: String, required: true },
-  unit: { type: String },
+  unit: { type: Number, enum: [1, 2, 3], required: true },
   value: { type: Number },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "users", required: true },
+
 });
 
 const Device = mongoose.model("devices", DeviceSchema);
