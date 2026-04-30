@@ -1,0 +1,140 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.page-center {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--color-sidebar);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 0;
+  flex-shrink: 0;
+}
+
+.sidebar__brand {
+  padding: 0 20px 24px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 16px;
+}
+
+.sidebar__brand-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
+
+.sidebar__brand-status {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.sidebar__nav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 12px;
+}
+
+.sidebar__logout {
+  padding: 16px 12px 0;
+  border-top: 1px solid var(--color-border);
+  margin-top: 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.nav-item:hover { color: var(--color-subtle); }
+
+.nav-item.active {
+  background: rgba(192, 57, 43, 0.12);
+  color: var(--color-red);
+  border-left: 2px solid var(--color-red);
+  border-radius: 0 4px 4px 0;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 20px 28px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topbar__title {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--color-text);
+  text-transform: uppercase;
+}
+
+.topbar__sub {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  margin-top: 4px;
+  cursor: default;
+}
+
+.topbar__sub .topbar__back {
+  cursor: pointer;
+  color: var(--color-red);
+}
+
+.topbar__sub .topbar__back:hover {
+  color: var(--color-red-hover);
+}
+
+.content {
+  padding: 24px 28px;
+}
+
+.content__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.content__label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--color-muted);
+  text-transform: uppercase;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
